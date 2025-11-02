@@ -1,44 +1,30 @@
-import {
-   AppBar,
-   Box,
-   Button, Card, CardContent, CardHeader,
-   Container,
-   createTheme, FormControl, Grid,
-   IconButton, InputLabel, MenuItem,
-   Paper,
-   Select,
-   Toolbar,
-   Typography,
-} from '@mui/material';
-import { Person } from '@mui/icons-material';
-import Header from './components/Header/header';
-import Selector from './components/Selecter/Selector';
-import AutocompleteMy from './components/Autocomplete/AutocompleteMy';
-import FilterContainer from './components/FilterContainer/FilterContainer';
-import StarIcon from '@mui/icons-material/Star';
-import GridContainer from './components/GridContainer/GridContainer';
-import { FilterContext, FilterDispatchContext, FilterProvider } from './components/FilterContext/FilterContext';
 import React from 'react';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import About from './pages/About';
+import ErrorPage from './pages/ErrorPage';
+import FilterPage from './pages/FilterPage';
+import FilmDetailsPage from './pages/FilmDetailsPage';
 
 function App () {
+
+   const router = createBrowserRouter([
+      {
+         path: '/',
+         element:<Navigate to='/FilterPage' replace/>
+      },
+       {
+         path   : '/FilterPage',
+         element: <FilterPage/>,
+      },
+      {
+         path   : '/FilmDetailsPage/:movieId',
+         element: <FilmDetailsPage/>,
+      },
+
+   ]);
+
    return (
-       <FilterProvider>
-          <Container
-              maxWidth="xl"
-              sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-
-             <Header></Header>
-
-             <Box
-                 sx={{ display: 'flex', flexDirection: 'row', gap: '2rem' }}>
-
-                <FilterContainer></FilterContainer>
-
-                <GridContainer></GridContainer>
-
-             </Box>
-          </Container>
-       </FilterProvider>
+       <RouterProvider router={router}/>
    );
 }
 

@@ -14,7 +14,12 @@ const FilterContainer = () => {
 
    return (
        <Paper elevation="4" sx={{
-          maxWidth     : '30%',
+          position: 'sticky',
+          top: '16px',
+          maxHeight: '40vh',
+          minHeight: '40vh',
+          minWidth: '24%',
+          maxWidth     : '24%',
           width        : '100%',
           padding      : '2rem',
           display      : 'flex',

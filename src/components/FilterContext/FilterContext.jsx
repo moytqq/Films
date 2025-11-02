@@ -25,7 +25,10 @@ export function useDispatchFilterOptions () {
 
 const initialState = {
    sortBy: 'popular',
-   years : [20, 50],
+   years : {
+      value : [75, 90],
+      labels: [2000, 2015],
+   },
    genres: [],
 };
 
@@ -43,7 +46,10 @@ function filterReducer (filterOptions, action) {
       case 'YEARS_CHANGE': {
          return ({
             ...filterOptions,
-            years: action.value.target.value,
+            years: {
+               value : action.value,
+               labels: action.years,
+            },
          });
       }
       case 'GENRES_CHANGE': {

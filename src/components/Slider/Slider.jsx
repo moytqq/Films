@@ -3,28 +3,48 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { useDispatchFilterOptions, useFilterOptions } from '../FilterContext/FilterContext';
 
-function valueLabelFormat (value) {
-   // Находим соответствующую метку в массиве marks
+function valueLabelFormat(value) {
    const mark = marks.find((mark) => mark.value === value);
-   return mark
-          ? mark.label
-          : value;
+   return mark ? mark.label : value;
 }
 
-function RangeSlider ({sx}) {
+function getYearLabels(valueArray) {
+   return valueArray.map(value => {
+      const mark = marks.find((mark) => mark.value === value);
+      return mark ? mark.label : value;
+   });
+}
 
+function RangeSlider({ sx }) {
    const years = useFilterOptions().years;
    const dispatch = useDispatchFilterOptions();
+
+   // Убедимся, что значения являются числами
+   const sliderValue = Array.isArray(years.value)
+                       ? years.value.map(val => Number(val))
+                       : [20, 50];
+
+   const handleChange = (event, newValue) => {
+      // Преобразуем в числа на всякий случай
+      const numericValue = newValue.map(val => Number(val));
+      const yearLabels = getYearLabels(numericValue);
+
+      dispatch({
+         type: 'YEARS_CHANGE',
+         value: numericValue,
+         years: yearLabels
+      });
+   };
 
    return (
        <Box sx={{ width: '95%', alignSelf: 'center' }}>
           <Slider
               sx={sx}
-              value={years}
-              onChange={(event) => dispatch({ type:'YEARS_CHANGE', value: event })}
+              value={sliderValue}
+              onChange={handleChange}
               valueLabelDisplay="on"
-              valueLabelFormat={valueLabelFormat} // Добавлено это свойство
-              getAriaValueText={valueLabelFormat} // Для accessibility
+              valueLabelFormat={valueLabelFormat}
+              getAriaValueText={valueLabelFormat}
               step={1}
               marks={filteredMarks}
               min={0}
