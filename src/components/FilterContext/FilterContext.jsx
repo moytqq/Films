@@ -24,7 +24,7 @@ export function useDispatchFilterOptions () {
 }
 
 const initialState = {
-   sortBy: 'popular',
+   sortBy: 'vote_average',
    years : {
       value : [75, 90],
       labels: [2000, 2015],

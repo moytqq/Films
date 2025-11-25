@@ -22,8 +22,8 @@ const Selector = () => {
               label="Сортировать по"
               onChange={(event, newValue)=>{dispatch({type: 'SORT_CHANGE', value: newValue})}}
           >
-             <MenuItem value='popular'>Популярность</MenuItem>
-             <MenuItem value='topRated'>Оценка</MenuItem>
+             <MenuItem value='popularity'>Популярность</MenuItem>
+             <MenuItem value='vote_average'>Оценка</MenuItem>
              <MenuItem value='else'>Что-то ещё</MenuItem>
           </Select>
        </FormControl>

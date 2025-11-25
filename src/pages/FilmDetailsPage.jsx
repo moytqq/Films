@@ -134,8 +134,8 @@ const FilmDetailsPage = () => {
                                 gap           : '0.5rem',
                                 justifyContent: 'space-between',
                              }}>
+                                <Typography variant="subtitle1">Дата выпуска:</Typography>
                                 <Typography variant="subtitle1">Страна:</Typography>
-                                <Typography variant="subtitle1">Год:</Typography>
                                 <Typography variant="subtitle1">Жанр:</Typography>
                                 <Typography variant="subtitle1">Режиссер:</Typography>
                                 <Typography variant="subtitle1">Сценарий:</Typography>

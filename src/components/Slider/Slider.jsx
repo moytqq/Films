@@ -48,7 +48,7 @@ function RangeSlider({ sx }) {
               step={1}
               marks={filteredMarks}
               min={0}
-              max={99}
+              max={100}
           />
        </Box>
    );

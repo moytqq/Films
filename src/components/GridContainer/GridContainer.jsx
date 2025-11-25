@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Card, CardContent, CardHeader, CardMedia, Grid, IconButton, Pagination, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import MovieListService from '../../API/MovieListService';
@@ -14,6 +14,7 @@ const GridContainer = () => {
    const [error, setError] = useState(null);
    const safeSortBy = useFilterOptions().sortBy || '';
    const [currPage, setCurrPage] = useState(1);
+   const prevCurrPage = useRef(currPage);
    const [totalPagesCount, setTotalPagesCount] = useState(0);
    const filterOptions = useFilterOptions();
 
@@ -26,12 +27,24 @@ const GridContainer = () => {
    getMovieYear('2025-08-20');
    console.log(filterOptions.years.labels);
    useEffect(() => {
+      let currPageForFetch;
+      if (prevCurrPage.current === currPage) {
+         prevCurrPage.current = 1;
+         currPageForFetch = 1;
+      }
+      else {
+        prevCurrPage.current = currPage;
+         currPageForFetch = currPage;
+      }
       const fetchMovieList = async () => {
          setLoading(true);
          setError(null);
          try {
-            const response = await MovieListService.getMovieList(safeSortBy, currPage);
-            console.log('fetch getMovieList response: ', response.results);
+            const response = await MovieListService.getMovieList(currPageForFetch,
+                safeSortBy,
+                filterOptions.years.labels,
+                filterOptions.genres);
+            console.log('fetch getMovieList response: ', response);
             setMovieList(response.results || []);
             setTotalPagesCount(response.total_pages > 500
                                ? 500
@@ -47,7 +60,21 @@ const GridContainer = () => {
       };
 
       fetchMovieList();
-   }, [safeSortBy, currPage]);
+   }, [safeSortBy, currPage, filterOptions.years.labels, filterOptions.genres]);
+
+   useEffect(() => {
+      setCurrPage(1);
+   }, [safeSortBy, filterOptions.years.labels, filterOptions.genres]);
+
+   console.log('fetch getMovieList arguments: ',
+       'currPage: ',
+       currPage,
+       'safeSortBy: ',
+       safeSortBy,
+       'filterOptions.years.labels: ',
+       filterOptions.years.labels,
+       'filterOptions.genres: ',
+       filterOptions.genres);
 
    if (loading) return <Typography>Загрузка...</Typography>;
    if (error) return <Typography color="error">{error}</Typography>;
@@ -67,11 +94,12 @@ const GridContainer = () => {
           flexDirection : 'column',
           gap           : 1,
           justifyContent: 'space-evenly',
-          alignItems    : 'center',
+          alignItems    : 'flex-start',
+          minWidth     : '72%',
        }}>
           <Pagination
-              sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-              page={currPage}
+              sx={{ justifyContent: 'space-between', alignItems: 'center', alignSelf: 'anchor-center' }}
+              page={prevCurrPage.current}
               boundaryCount={6}
               size={'large'}
               count={totalPagesCount}
@@ -79,68 +107,95 @@ const GridContainer = () => {
           ></Pagination>
 
           <Grid container spacing={2} rowSpacing={2} columnSpacing={0} gap="1rem"
-                sx={{ justifyContent: 'space-evenly' }}>
+                sx={{ justifyContent: 'flex-start', minWidth: '100%' }}>
              {movieList
-                 .filter(movie => (getMovieYear(movie.release_date) > filterOptions.years.labels[0]) && (getMovieYear(movie.release_date) < filterOptions.years.labels[1]))
+                 .filter(movie => (getMovieYear(movie.release_date) >= filterOptions.years.labels[0]) &&
+                     (getMovieYear(movie.release_date) <= filterOptions.years.labels[1]))
                  .map((movie) => (
-                 <Grid key={movie.id} sx={{ maxWidth: '23%', minWidth: '23%' }}> {/* Добавь 'item' */}
-                    <Card sx={{
-                       maxWidth      : '100%',
-                       height        : '100%',
-                       display       : 'flex',
-                       flexDirection : 'column',
-                       justifyContent: 'space-between',
-                       cursor        : 'pointer',
-                    }}
-                          onClick={() => {handleFilmClick(movie.id);}}>
-                       <CardMedia
-                           component="img"
-                           height="300"
-                           image={getPosterUrl(movie.poster_path, 'w500')}
-                           alt={movie.title}
-                           sx={{ objectFit: 'cover' }}
-                           onError={(e) => {
-                              e.target.src = '/placeholder.jpg';
-                           }}
-                       />
+                     <Grid key={movie.id} sx={{ minWidth:'23%',maxWidth:'23%', }}> {/* Добавь 'item' */}
+                        <Card sx={{
+                           maxWidth      : '100%',
+                           height        : '100%',
+                           display       : 'flex',
+                           flexDirection : 'column',
+                           justifyContent: 'space-between',
+                           cursor        : 'pointer',
+                        }}
+                              onClick={() => {handleFilmClick(movie.id);}}>
+                           <CardMedia
+                               component="img"
+                               height="375"
+                               image={getPosterUrl(movie.poster_path, 'w500')}
+                               alt={movie.title}
+                               sx={{ objectFit: 'cover' }}
+                               onError={(e) => {
+                                  e.target.src = '/placeholder.jpg';
+                               }}
+                           />
 
-                       <CardHeader
-                           title={movie.title}
-                           action={
-                              <IconButton
-                                  onClick={handleFavoriteClick}>
-                                 <StarIcon/>
-                              </IconButton>
-                           }
-                       />
-                       <CardContent
-                           sx={{
-                              mt       : 'auto',
-                              borderTop: 'solid 0.1rem ',
-                              alignSelf: 'center',
-                              minWidth : '100%', p: '0',
-                              pt       : '16px',
-                              pb       : '16px',
-                              cursor   : 'default',
-                           }}
-                           onClick={(event) => {event.stopPropagation();}}>
-                          <Typography
-                              sx={{
-                                 maxWidth   : 'max-content',
-                                 ml         : 2,
-                                 mr         : 2,
-                                 display    : 'flex',
-                                 justifySelf: 'center',
-                              }}
-                              variant="body1"
-                              color="textSecondary"
-                              component="p">
-                             Средняя оценка: {movie.vote_average}
-                          </Typography>
-                       </CardContent>
-                    </Card>
-                 </Grid>
-             ))}
+                           <CardHeader
+                               title={movie.title}
+                               action={
+                                  <IconButton
+                                      onClick={handleFavoriteClick}>
+                                     <StarIcon/>
+                                  </IconButton>
+                               }
+                           />
+                           <CardContent
+                               sx={{
+                                  mt       : 'auto',
+                                  borderTop: 'solid 0.1rem ',
+                                  alignSelf: 'center',
+                                  minWidth : '100%', p: '0',
+                                  pt       : '16px',
+                                  pb       : '16px',
+                                  cursor   : 'default',
+                               }}
+                               onClick={(event) => {event.stopPropagation();}}>
+                              <Typography
+                                  sx={{
+                                     maxWidth   : 'max-content',
+                                     ml         : 2,
+                                     mr         : 2,
+                                     display    : 'flex',
+                                     justifySelf: 'center',
+                                  }}
+                                  variant="body1"
+                                  color="textSecondary"
+                                  component="p">
+                                 Средняя оценка: {movie.vote_average}
+                              </Typography>
+                              <Typography
+                                  sx={{
+                                     maxWidth   : 'max-content',
+                                     ml         : 2,
+                                     mr         : 2,
+                                     display    : 'flex',
+                                     justifySelf: 'center',
+                                  }}
+                                  variant="body1"
+                                  color="textSecondary"
+                                  component="p">
+                                 Количество оценок: {movie.vote_count}
+                              </Typography>
+                              <Typography
+                                  sx={{
+                                     maxWidth   : 'max-content',
+                                     ml         : 2,
+                                     mr         : 2,
+                                     display    : 'flex',
+                                     justifySelf: 'center',
+                                  }}
+                                  variant="body1"
+                                  color="textSecondary"
+                                  component="p">
+                                 Популярность: {movie.popularity}
+                              </Typography>
+                           </CardContent>
+                        </Card>
+                     </Grid>
+                 ))}
           </Grid>
        </Box>
    );
