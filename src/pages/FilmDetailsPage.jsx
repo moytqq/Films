@@ -182,7 +182,7 @@ const FilmDetailsPage = () => {
                                    }
                                 </Box>
                                 <Typography variant="subtitle1">{movieInfo.budget}</Typography>
-                                <Typography variant="subtitle1">Хрен</Typography>
+                                <Typography variant="subtitle1">-----</Typography>
                                 <Typography variant="subtitle1">{movieRuntimeInHours(movieInfo.runtime)}</Typography>
                              </Box>
                           </Box>
