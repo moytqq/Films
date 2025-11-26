@@ -1,5 +1,6 @@
 {
   "name": "films",
+  "homepage": "/Movies",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
