@@ -24,7 +24,6 @@ const Selector = () => {
           >
              <MenuItem value='popularity'>Популярность</MenuItem>
              <MenuItem value='vote_average'>Оценка</MenuItem>
-             <MenuItem value='else'>Что-то ещё</MenuItem>
           </Select>
        </FormControl>
    );
