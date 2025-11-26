@@ -1,7 +1,5 @@
 import React from 'react';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
-import About from './pages/About';
-import ErrorPage from './pages/ErrorPage';
 import FilterPage from './pages/FilterPage';
 import FilmDetailsPage from './pages/FilmDetailsPage';
 
@@ -21,7 +19,9 @@ function App () {
          element: <FilmDetailsPage/>,
       },
 
-   ]);
+   ],{
+      basename: '/Movies' ,
+   });
 
    return (
        <RouterProvider router={router}/>
